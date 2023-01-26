@@ -10,32 +10,30 @@ jobs:
     steps:
     - name: Setup latest Alpine Linux
       uses: jirutka/setup-alpine@v1
-      
-    - name: Install packages
-      run: |
-        apk add git make cmake libstdc++ gcc g++ libuv-dev openssl-dev hwloc-dev
-      shell: alpine.sh --root {0}
+      with:
+        packages: >
+          make
+          cmake
+          libstdc++
+          gcc
+          g++
+          automake
+          libtool
+          autoconf
+          linux-headers
 
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Create directory
-      run: mkdir build
-      shell: alpine.sh --root {0}
-
-    - name: Configure build
-      working-directory: ${{env.working-dir}}
-      run: cmake ..
-      shell: alpine.sh --root {0}
-
     - name: Build
-      working-directory: ${{env.working-dir}}
-      run: make -j 6
-      shell: alpine.sh --root {0}
-
-    - name: Make executable
-      working-directory: ${{env.working-dir}}
-      run: chmod u+x ./xmrig
+      run: |
+        mkdir build
+        cd ./scripts
+        ./build_deps.sh
+        cd ../build
+        cmake .. -DXMRIG_DEPS=scripts/deps -DBUILD_STATIC=ON
+        make -j 6
+        chmod u+x ./xmrig
       shell: alpine.sh --root {0}
 
     - uses: actions/upload-artifact@v3.1.2
