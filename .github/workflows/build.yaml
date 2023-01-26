@@ -17,7 +17,7 @@ jobs:
       run: mkdir build
     - name: Configure build
       working-directory: ${{env.working-dir}}
-      run: cmake ..
+      run: cmake .. -DXMRIG_DEPS=scripts/deps
     - name: Build
       working-directory: ${{env.working-dir}}
       run: make -j 6
